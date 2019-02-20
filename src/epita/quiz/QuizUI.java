@@ -122,7 +122,7 @@ public class QuizUI {
         gridPane.add(addTopicBtn, 3, 2);
 
         // Add possibilityanswers 
-        Label possibilityAnswerLabel = new Label("Choices:");
+        Label possibilityAnswerLabel = new Label("Choose:");
         gridPane.add(possibilityAnswerLabel, 0, 5);
 
         ListView listViewChoosingItems = new ListView();
