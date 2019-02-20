@@ -107,20 +107,22 @@ public class QuizUI {
         gridPane.add(QuestionField, 1, 1);
 
         // Add topics 
-        Label topicslLabel = new Label("Topics : ");
+        Label topicslLabel = new Label("Topics List: ");
         gridPane.add(topicslLabel, 0, 2);
 
         ListView listViewTopics = new ListView();
         listViewTopics.setPrefHeight(100);
         gridPane.add(listViewTopics, 1, 2);
 
+        Label topicsNamelLabel = new Label("Topic");
+        gridPane.add(topicsNamelLabel, 2, 1);
         TextField TopicField = new TextField();
-        Button addTopicBtn = new Button("+ Add Topic");
+        Button addTopicBtn = new Button("+Topic");
         gridPane.add(TopicField, 2, 2);
         gridPane.add(addTopicBtn, 2, 3);
 
         // Add possibilityanswers 
-        Label possibilityAnswerLabel = new Label("Possibility Answers  : ");
+        Label possibilityAnswerLabel = new Label("Choices:");
         gridPane.add(possibilityAnswerLabel, 0, 5);
 
         ListView listViewPossibilityAnswer = new ListView();
@@ -128,12 +130,12 @@ public class QuizUI {
         gridPane.add(listViewPossibilityAnswer, 1, 5);
 
         TextField AnswerField = new TextField();
-        Button addAnswerBtn = new Button("+ Add Answers");
+        Button addAnswerBtn = new Button("+Choice");
         gridPane.add(AnswerField, 2, 5);
         gridPane.add(addAnswerBtn, 2, 6);
 
         // Add possibilityanswers 
-        Label correctAnswerLabel = new Label("Correct Answers  : ");
+        Label correctAnswerLabel = new Label("Answers:");
         gridPane.add(correctAnswerLabel, 0, 7);
 
         ListView ListViewCorrectAnswer = new ListView();
@@ -156,7 +158,7 @@ public class QuizUI {
 
         addAnswerBtn.setOnAction((ActionEvent event) -> {
             if (AnswerField.getText().isEmpty()) {
-                showAlert(Alert.AlertType.ERROR, gridPane.getScene().getWindow(), "Form Error!", "Please enter a answer");
+                showAlert(Alert.AlertType.ERROR, gridPane.getScene().getWindow(), "Form Error!", "Please enter a choice");
                 return;
             }
             listViewPossibilityAnswer.getItems().add(AnswerField.getText());
@@ -204,22 +206,94 @@ public class QuizUI {
         searchButton.setOnAction((ActionEvent event) -> {
             if (TopicField.getText().isEmpty()) {
                 showAlert(Alert.AlertType.ERROR, gridPane.getScene().getWindow(), "Form Error!", "Please enter a topics to search");
+            
             } else {
                 Quiz search = new Quiz();
                 String resutl = search.SearchResult(TopicField.getText());
-                
-                
+
                 try {
                     JSONParser parser = new JSONParser();
                     JSONObject jsonObject = (JSONObject) parser.parse(resutl);
                     QuestionField.setText((String) jsonObject.get("question"));
+                    difficulty.getSelectionModel().select((String) jsonObject.get("difficulty"));
+
+          
+                    //feth possible anwser
+                    JSONArray possAnswerJarray = (JSONArray) jsonObject.get("possAnswer");
+                    if (possAnswerJarray != null && possAnswerJarray.size() > 0) {
+
+                        for (int i = 0; i < possAnswerJarray.size(); i++) {
+
+                            String jsonString = possAnswerJarray.get(0).toString().replace("[", "");
+                            jsonString = jsonString.replace("]", "");
+                            String[] nameArray = {jsonString};
+
+                            for (String name : nameArray) {
+
+                                String[] StringAray = name.split(",");
+
+                                for (String Item : StringAray) {
+
+                                    Item = Item.replace("\"", "");
+                                    listViewPossibilityAnswer.getItems().add(Item);
+                                }
+                            }
+                        }
+                    }
+                    
+                    //feth topics
+                    JSONArray topicsJarray = (JSONArray) jsonObject.get("topics");
+                    if (topicsJarray != null && topicsJarray.size() > 0) {
+
+                        for (int i = 0; i < topicsJarray.size(); i++) {
+
+                            String jsonString = topicsJarray.get(0).toString().replace("[", "");
+                            jsonString = jsonString.replace("]", "");
+                            String[] nameArray = {jsonString};
+
+                            for (String name : nameArray) {
+
+                                String[] StringAray = name.split(",");
+
+                                for (String Item : StringAray) {
+
+                                    Item = Item.replace("\"", "");
+                                    listViewTopics.getItems().add(Item);
+                                }
+                            }
+                        }
+                    }
+                    
+                    //feth topics
+                    JSONArray answerJarray = (JSONArray) jsonObject.get("answer");
+                    if (answerJarray != null && answerJarray.size() > 0) {
+
+                        for (int i = 0; i < answerJarray.size(); i++) {
+
+                            String jsonString = answerJarray.get(0).toString().replace("[", "");
+                            jsonString = jsonString.replace("]", "");
+                            String[] nameArray = {jsonString};
+
+                            for (String name : nameArray) {
+
+                                String[] StringAray = name.split(",");
+
+                                for (String Item : StringAray) {
+
+                                    Item = Item.replace("\"", "");
+                                    ListViewCorrectAnswer.getItems().add(Item);
+                                }
+                            }
+                        }
+                    }
+                    
                 } catch (ParseException ex) {
                     Logger.getLogger(QuizUI.class.getName()).log(Level.SEVERE, null, ex);
                 }
 
                 System.out.print(resutl);
             }
-            
+
         });
 
         group.selectedToggleProperty().addListener((ObservableValue<? extends Toggle> ov, Toggle old_toggle, Toggle new_toggle) -> {
@@ -274,7 +348,7 @@ public class QuizUI {
                 }
 
                 if (listViewPossibilityAnswer.getItems().isEmpty()) {
-                    showAlert(Alert.AlertType.ERROR, gridPane.getScene().getWindow(), "Form Error!", "Please enter some answers");
+                    showAlert(Alert.AlertType.ERROR, gridPane.getScene().getWindow(), "Form Error!", "Please enter some choices");
                     return;
                 }
 

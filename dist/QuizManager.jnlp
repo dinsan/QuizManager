@@ -8,7 +8,7 @@
   </information>
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="QuizManager.jar" size="24164" download="eager" />
+    <jar href="QuizManager.jar" size="24914" download="eager" />
     <jar href="lib\gson-2.8.5.jar" size="241622" download="eager" />
     <jar href="lib\json-simple-1.1.jar" size="16046" download="eager" />
   </resources>
