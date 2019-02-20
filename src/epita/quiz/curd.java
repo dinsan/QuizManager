@@ -53,7 +53,7 @@ public class curd implements curdOperation {
     }
 
     @Override
-    public void update(String ID, String FileName) {
+    public void update(String FileName, MCQQuestion mcq) {
         try {
             JSONParser parser = new JSONParser();
             Object object = parser.parse(new FileReader(_utility.GetPathNmae(FileName)));
@@ -72,17 +72,25 @@ public class curd implements curdOperation {
                 String stringToParse = list.get(i);
                 JSONObject jsonObject = (JSONObject) parser.parse(stringToParse);
 
-                boolean containsValue = jsonObject.containsValue(ID);
+                Gson updateBuilder = new GsonBuilder().create();
+                String updateString = updateBuilder.toJson(mcq);
+                JSONObject updatejsonObj = (JSONObject) parser.parse(updateString);
+
+                boolean containsValue = jsonObject.containsValue((String) updatejsonObj.get("ID"));
 
                 if (containsValue) {
-
+                    
                     JSONObject xjson = (JSONObject) parser.parse(stringToParse);
-                    xjson.put("difficulty", "hardxxxxxxxxx");
+                    xjson.put("difficulty", (String) updatejsonObj.get("difficulty"));
+                    xjson.put("question", (String) updatejsonObj.get("question"));
+                    xjson.put("answer", (JSONArray) updatejsonObj.get("answer"));
+                    xjson.put("topics", (JSONArray) updatejsonObj.get("topics"));
+                    xjson.put("possAnswer", (JSONArray) updatejsonObj.get("possAnswer"));
 
                     Gson gsonBuilder = new GsonBuilder().create();
                     String jsonFromPojo = gsonBuilder.toJson(xjson);
 
-                    String AfterRemove = delete("", FileName).toString();
+                    String AfterRemove = delete((String) updatejsonObj.get("ID"), FileName).toString();
 
                     String Removedobj = _utility.RemoveFandLstring(AfterRemove);
                     System.out.print(Removedobj);
@@ -151,7 +159,7 @@ public class curd implements curdOperation {
 
                 if (topicArray != null && topicArray.size() > 0) {
 
-                    for (int t = 0; t < topicArray.size(); i++) {
+                    for (int t = 0; t < topicArray.size(); t++) {
 
                         String StringpoAnswer = topicArray.get(0).toString().replace("[", "");
                         StringpoAnswer = StringpoAnswer.replace("]", "");
@@ -180,7 +188,7 @@ public class curd implements curdOperation {
             System.out.print(e.getMessage());
         }
 
-        return stringToParse;
+        return null;
     }
 
     @Override

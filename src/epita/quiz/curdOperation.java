@@ -17,7 +17,7 @@ public interface curdOperation {
 
     public void create(String PathName, MCQQuestion JsonObj);
 
-    public void update(String ID, String PathName);
+    public void update(String FileName, MCQQuestion mcq);
 
     public ArrayList< String> read(String PathName);
 

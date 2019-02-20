@@ -117,9 +117,9 @@ public class QuizUI {
         Label topicsNamelLabel = new Label("Topic");
         gridPane.add(topicsNamelLabel, 2, 1);
         TextField TopicField = new TextField();
-        Button addTopicBtn = new Button("+Topic");
+        Button addTopicBtn = new Button("+");
         gridPane.add(TopicField, 2, 2);
-        gridPane.add(addTopicBtn, 2, 3);
+        gridPane.add(addTopicBtn, 3, 2);
 
         // Add possibilityanswers 
         Label possibilityAnswerLabel = new Label("Choices:");
@@ -130,9 +130,9 @@ public class QuizUI {
         gridPane.add(listViewPossibilityAnswer, 1, 5);
 
         TextField AnswerField = new TextField();
-        Button addAnswerBtn = new Button("+Choice");
+        Button addAnswerBtn = new Button("+");
         gridPane.add(AnswerField, 2, 5);
-        gridPane.add(addAnswerBtn, 2, 6);
+        gridPane.add(addAnswerBtn, 3, 5);
 
         // Add possibilityanswers 
         Label correctAnswerLabel = new Label("Answers:");
@@ -143,9 +143,12 @@ public class QuizUI {
         gridPane.add(ListViewCorrectAnswer, 1, 7);
 
         TextField CAnswerField = new TextField();
-        Button CaddAnswerBtn = new Button("+Answers");
+        Button CaddAnswerBtn = new Button("+");
         gridPane.add(CAnswerField, 2, 7);
-        gridPane.add(CaddAnswerBtn, 2, 8);
+        gridPane.add(CaddAnswerBtn, 3, 7);
+
+        Label QuesID = new Label();
+        QuesID.setVisible(false);
 
         addTopicBtn.setOnAction((ActionEvent event) -> {
             if (TopicField.getText().isEmpty()) {
@@ -188,7 +191,7 @@ public class QuizUI {
         gridPane.add(difficulty, 1, 3);
 
         // Add Submit Button
-        Button submitButton = new Button("Create New Question");
+        Button submitButton = new Button("CRATE");
         submitButton.setPrefHeight(40);
         submitButton.setDefaultButton(true);
         submitButton.setPrefWidth(100);
@@ -197,16 +200,83 @@ public class QuizUI {
         GridPane.setMargin(submitButton, new Insets(20, 0, 20, 0));
 
         //Search by Topic
-        Button searchButton = new Button("Search");
+        Button searchButton = new Button("SEARCH");
         searchButton.setPrefHeight(40);
         searchButton.setDefaultButton(true);
         searchButton.setPrefWidth(100);
         gridPane.add(searchButton, 1, 9);
 
+        Button updateButton = new Button("UPDATE");
+        updateButton.setPrefHeight(40);
+        updateButton.setDefaultButton(true);
+        updateButton.setPrefWidth(100);
+        gridPane.add(updateButton, 2, 9);
+
+        Button deleteButton = new Button("DELETE");
+        deleteButton.setPrefHeight(40);
+        deleteButton.setDefaultButton(true);
+        deleteButton.setPrefWidth(100);
+        gridPane.add(deleteButton, 3, 9);
+
+        deleteButton.setOnAction((ActionEvent event) -> {
+
+            if (listViewTopics.getItems().isEmpty()) {
+                showAlert(Alert.AlertType.ERROR, gridPane.getScene().getWindow(), "Form Error!", "Search and delete");
+
+            } else {
+                MCQQuestion curd = new MCQQuestion();
+                curd.deleteMCQ(QuesID.getText());
+
+                QuestionField.clear();
+                AnswerField.clear();
+                ListViewCorrectAnswer.getItems().clear();
+                listViewTopics.getItems().clear();
+                listViewPossibilityAnswer.getItems().clear();
+
+                showAlert(Alert.AlertType.CONFIRMATION, gridPane.getScene().getWindow(), "Question delete Successful!", "Question is " + QuestionField.getText());
+
+            }
+
+        });
+
+        updateButton.setOnAction((ActionEvent event) -> {
+            if (listViewTopics.getItems().isEmpty()) {
+                showAlert(Alert.AlertType.ERROR, gridPane.getScene().getWindow(), "Form Error!", "Search and update");
+
+            } else {
+                MCQQuestion update = new MCQQuestion();
+                update.updateMCQ(
+                        QuesID.getText(),
+                        QuestionField.getText(),
+                        listViewTopics.getItems().toArray(),
+                        difficulty.getSelectionModel().getSelectedItem().toString(),
+                        listViewPossibilityAnswer.getItems().toArray(),
+                        ListViewCorrectAnswer.getItems().toArray()
+                );
+
+                QuestionField.clear();
+                AnswerField.clear();
+                ListViewCorrectAnswer.getItems().clear();
+                listViewTopics.getItems().clear();
+                listViewPossibilityAnswer.getItems().clear();
+
+                showAlert(Alert.AlertType.CONFIRMATION, gridPane.getScene().getWindow(), "Question update Successful!", "Question is " + QuestionField.getText());
+
+            }
+
+        });
+
         searchButton.setOnAction((ActionEvent event) -> {
+
+            QuestionField.clear();
+            AnswerField.clear();
+            ListViewCorrectAnswer.getItems().clear();
+            listViewTopics.getItems().clear();
+            listViewPossibilityAnswer.getItems().clear();
+
             if (TopicField.getText().isEmpty()) {
                 showAlert(Alert.AlertType.ERROR, gridPane.getScene().getWindow(), "Form Error!", "Please enter a topics to search");
-            
+
             } else {
                 Quiz search = new Quiz();
                 String resutl = search.SearchResult(TopicField.getText());
@@ -216,8 +286,7 @@ public class QuizUI {
                     JSONObject jsonObject = (JSONObject) parser.parse(resutl);
                     QuestionField.setText((String) jsonObject.get("question"));
                     difficulty.getSelectionModel().select((String) jsonObject.get("difficulty"));
-
-          
+                    QuesID.setText((String) jsonObject.get("ID"));
                     //feth possible anwser
                     JSONArray possAnswerJarray = (JSONArray) jsonObject.get("possAnswer");
                     if (possAnswerJarray != null && possAnswerJarray.size() > 0) {
@@ -240,7 +309,7 @@ public class QuizUI {
                             }
                         }
                     }
-                    
+
                     //feth topics
                     JSONArray topicsJarray = (JSONArray) jsonObject.get("topics");
                     if (topicsJarray != null && topicsJarray.size() > 0) {
@@ -263,7 +332,7 @@ public class QuizUI {
                             }
                         }
                     }
-                    
+
                     //feth topics
                     JSONArray answerJarray = (JSONArray) jsonObject.get("answer");
                     if (answerJarray != null && answerJarray.size() > 0) {
@@ -286,7 +355,7 @@ public class QuizUI {
                             }
                         }
                     }
-                    
+
                 } catch (ParseException ex) {
                     Logger.getLogger(QuizUI.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -305,6 +374,9 @@ public class QuizUI {
                     listViewTopics.setDisable(true);
                     addTopicBtn.setDisable(true);
                     difficulty.setDisable(true);
+                    listViewPossibilityAnswer.setDisable(true);
+                    AnswerField.setDisable(true);
+                    addAnswerBtn.setDisable(true);
                     QuestionTyoe = "open";
                 } else {
                     TopicField.setDisable(false);
@@ -312,6 +384,9 @@ public class QuizUI {
                     listViewTopics.setDisable(false);
                     addTopicBtn.setDisable(false);
                     difficulty.setDisable(false);
+                    listViewPossibilityAnswer.setDisable(false);
+                    AnswerField.setDisable(false);
+                    addAnswerBtn.setDisable(false);
                     QuestionTyoe = "mcq";
                 }
 
@@ -320,11 +395,15 @@ public class QuizUI {
 
         Button qizWinOpenButton = new Button("Open Test");
         qizWinOpenButton.setPrefHeight(40);
-        gridPane.add(qizWinOpenButton, 0, 11);
+        qizWinOpenButton.setDefaultButton(true);
+        qizWinOpenButton.setPrefWidth(100);
+        gridPane.add(qizWinOpenButton, 2, 11);
 
         Button ExportButton = new Button("Export");
         ExportButton.setPrefHeight(40);
-        gridPane.add(ExportButton, 1, 11);
+        ExportButton.setDefaultButton(true);
+        ExportButton.setPrefWidth(100);
+        gridPane.add(ExportButton, 3, 11);
 
         ExportButton.setOnAction((ActionEvent event) -> {
             Quiz export = new Quiz();
