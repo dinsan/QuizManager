@@ -2,14 +2,42 @@ MCQ Question
 
 Question) 1
 ---------------------
-Question: gggggggggg?
-Difficulty: Medium
-ID: 88c798fb-57cf-41ca-89f7-87d63e9e873b
+Question: Which is true about a method-local inner class?
+Difficulty: High
+ID: 51af1e51-f543-4dbe-9d97-9b522b85c7b2
 ---------------------
 
 Question) 2
 ---------------------
-Question: ppppppppp?
+Question: Which constructs an anonymous inner class instance? 
+Difficulty: High
+ID: a826f374-c113-4d63-af9a-84ba0d8b2843
+---------------------
+
+Question) 3
+---------------------
+Question:  Which of the following allows the programmer to destroy an object x?
+Difficulty: High
+ID: ee972933-7655-4f1f-b18c-1dfa9808bad3
+---------------------
+
+Question) 4
+---------------------
+Question: What can cause a thread to stop executing?
 Difficulty: Medium
-ID: 8e583c11-4d62-49b4-8a6f-d39748c46085
+ID: 864caec9-7119-4d81-b4a9-5e91b510c85d
+---------------------
+
+Question) 5
+---------------------
+Question: In PL/SQL, a warning or error condition is called an exception. 
+Difficulty: Low
+ID: 74d47f0c-3f25-47aa-ab4a-37e0e00812cf
+---------------------
+
+Question) 6
+---------------------
+Question: Which of the following returns the current value in a specified sequence. (PL/SQL)
+Difficulty: Medium
+ID: cba4dd90-cee9-4200-9266-4fd5a69b4be1
 ---------------------

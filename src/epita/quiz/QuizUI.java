@@ -114,8 +114,8 @@ public class QuizUI {
         listViewTopics.setPrefHeight(100);
         gridPane.add(listViewTopics, 1, 2);
 
-        Label topicsNamelLabel = new Label("Topic");
-        gridPane.add(topicsNamelLabel, 2, 1);
+        // Label topicsNamelLabel = new Label("Topic");
+        //gridPane.add(topicsNamelLabel, 2, 2);
         TextField TopicField = new TextField();
         Button addTopicBtn = new Button("+");
         gridPane.add(TopicField, 2, 2);
@@ -125,14 +125,14 @@ public class QuizUI {
         Label possibilityAnswerLabel = new Label("Choices:");
         gridPane.add(possibilityAnswerLabel, 0, 5);
 
-        ListView listViewPossibilityAnswer = new ListView();
-        listViewPossibilityAnswer.setPrefHeight(100);
-        gridPane.add(listViewPossibilityAnswer, 1, 5);
+        ListView listViewChoosingItems = new ListView();
+        listViewChoosingItems.setPrefHeight(100);
+        gridPane.add(listViewChoosingItems, 1, 5);
 
-        TextField AnswerField = new TextField();
-        Button addAnswerBtn = new Button("+");
-        gridPane.add(AnswerField, 2, 5);
-        gridPane.add(addAnswerBtn, 3, 5);
+        TextField choosingField = new TextField();
+        Button addChoosingBtn = new Button("+");
+        gridPane.add(choosingField, 2, 5);
+        gridPane.add(addChoosingBtn, 3, 5);
 
         // Add possibilityanswers 
         Label correctAnswerLabel = new Label("Answers:");
@@ -142,10 +142,11 @@ public class QuizUI {
         ListViewCorrectAnswer.setPrefHeight(100);
         gridPane.add(ListViewCorrectAnswer, 1, 7);
 
-        TextField CAnswerField = new TextField();
-        Button CaddAnswerBtn = new Button("+");
-        gridPane.add(CAnswerField, 2, 7);
-        gridPane.add(CaddAnswerBtn, 3, 7);
+        ComboBox answerForTheQuestion = new ComboBox();
+        answerForTheQuestion.setMaxWidth(200);
+        Button answerForBtn = new Button("+");
+        gridPane.add(answerForTheQuestion, 2, 7);
+        gridPane.add(answerForBtn, 3, 7);
 
         Label QuesID = new Label();
         QuesID.setVisible(false);
@@ -159,22 +160,23 @@ public class QuizUI {
             TopicField.clear();
         });
 
-        addAnswerBtn.setOnAction((ActionEvent event) -> {
-            if (AnswerField.getText().isEmpty()) {
+        addChoosingBtn.setOnAction((ActionEvent event) -> {
+            if (choosingField.getText().isEmpty()) {
                 showAlert(Alert.AlertType.ERROR, gridPane.getScene().getWindow(), "Form Error!", "Please enter a choice");
                 return;
             }
-            listViewPossibilityAnswer.getItems().add(AnswerField.getText());
-            AnswerField.clear();
+            listViewChoosingItems.getItems().add(choosingField.getText());
+            answerForTheQuestion.getItems().add(choosingField.getText());
+            choosingField.clear();
         });
 
-        CaddAnswerBtn.setOnAction((ActionEvent event) -> {
-            if (CAnswerField.getText().isEmpty()) {
+        answerForBtn.setOnAction((ActionEvent event) -> {
+            if (answerForTheQuestion.getSelectionModel().isEmpty()) {
                 showAlert(Alert.AlertType.ERROR, gridPane.getScene().getWindow(), "Form Error!", "Please enter a answer");
                 return;
             }
-            ListViewCorrectAnswer.getItems().add(CAnswerField.getText());
-            CAnswerField.clear();
+            ListViewCorrectAnswer.getItems().add(answerForTheQuestion.getSelectionModel().getSelectedItem().toString());
+
         });
 
         // Add Password Label
@@ -191,13 +193,13 @@ public class QuizUI {
         gridPane.add(difficulty, 1, 3);
 
         // Add Submit Button
-        Button submitButton = new Button("CRATE");
-        submitButton.setPrefHeight(40);
-        submitButton.setDefaultButton(true);
-        submitButton.setPrefWidth(100);
-        gridPane.add(submitButton, 1, 8);
-        GridPane.setHalignment(submitButton, HPos.LEFT);
-        GridPane.setMargin(submitButton, new Insets(20, 0, 20, 0));
+        Button carteQuestionBtn = new Button("CREATE");
+        carteQuestionBtn.setPrefHeight(40);
+        carteQuestionBtn.setDefaultButton(true);
+        carteQuestionBtn.setPrefWidth(100);
+        gridPane.add(carteQuestionBtn, 1, 8);
+        GridPane.setHalignment(carteQuestionBtn, HPos.LEFT);
+        GridPane.setMargin(carteQuestionBtn, new Insets(20, 0, 20, 0));
 
         //Search by Topic
         Button searchButton = new Button("SEARCH");
@@ -210,13 +212,25 @@ public class QuizUI {
         updateButton.setPrefHeight(40);
         updateButton.setDefaultButton(true);
         updateButton.setPrefWidth(100);
-        gridPane.add(updateButton, 2, 9);
+        gridPane.add(updateButton, 2, 8);
 
         Button deleteButton = new Button("DELETE");
         deleteButton.setPrefHeight(40);
         deleteButton.setDefaultButton(true);
         deleteButton.setPrefWidth(100);
-        gridPane.add(deleteButton, 3, 9);
+        gridPane.add(deleteButton, 3, 8);
+
+        Button evaluationButton = new Button("EVlAUTION");
+        evaluationButton.setPrefHeight(40);
+        evaluationButton.setDefaultButton(true);
+        evaluationButton.setPrefWidth(100);
+        gridPane.add(evaluationButton, 2, 9);
+
+        evaluationButton.setOnAction((ActionEvent event) -> {
+
+            showAlert(Alert.AlertType.INFORMATION, gridPane.getScene().getWindow(), "Test Result", "Out of 100/80");
+
+        });
 
         deleteButton.setOnAction((ActionEvent event) -> {
 
@@ -228,10 +242,10 @@ public class QuizUI {
                 curd.deleteMCQ(QuesID.getText());
 
                 QuestionField.clear();
-                AnswerField.clear();
+                choosingField.clear();
                 ListViewCorrectAnswer.getItems().clear();
                 listViewTopics.getItems().clear();
-                listViewPossibilityAnswer.getItems().clear();
+                listViewChoosingItems.getItems().clear();
 
                 showAlert(Alert.AlertType.CONFIRMATION, gridPane.getScene().getWindow(), "Question delete Successful!", "Question is " + QuestionField.getText());
 
@@ -245,20 +259,20 @@ public class QuizUI {
 
             } else {
                 MCQQuestion update = new MCQQuestion();
-                update.updateMCQ(
-                        QuesID.getText(),
+                update.updateMCQ(QuesID.getText(),
                         QuestionField.getText(),
                         listViewTopics.getItems().toArray(),
                         difficulty.getSelectionModel().getSelectedItem().toString(),
-                        listViewPossibilityAnswer.getItems().toArray(),
+                        listViewChoosingItems.getItems().toArray(),
                         ListViewCorrectAnswer.getItems().toArray()
                 );
 
                 QuestionField.clear();
-                AnswerField.clear();
+                choosingField.clear();
                 ListViewCorrectAnswer.getItems().clear();
                 listViewTopics.getItems().clear();
-                listViewPossibilityAnswer.getItems().clear();
+                listViewChoosingItems.getItems().clear();
+                answerForTheQuestion.getItems().clear();
 
                 showAlert(Alert.AlertType.CONFIRMATION, gridPane.getScene().getWindow(), "Question update Successful!", "Question is " + QuestionField.getText());
 
@@ -269,10 +283,10 @@ public class QuizUI {
         searchButton.setOnAction((ActionEvent event) -> {
 
             QuestionField.clear();
-            AnswerField.clear();
+            choosingField.clear();
             ListViewCorrectAnswer.getItems().clear();
             listViewTopics.getItems().clear();
-            listViewPossibilityAnswer.getItems().clear();
+            listViewChoosingItems.getItems().clear();
 
             if (TopicField.getText().isEmpty()) {
                 showAlert(Alert.AlertType.ERROR, gridPane.getScene().getWindow(), "Form Error!", "Please enter a topics to search");
@@ -304,7 +318,7 @@ public class QuizUI {
                                 for (String Item : StringAray) {
 
                                     Item = Item.replace("\"", "");
-                                    listViewPossibilityAnswer.getItems().add(Item);
+                                    listViewChoosingItems.getItems().add(Item);
                                 }
                             }
                         }
@@ -374,9 +388,9 @@ public class QuizUI {
                     listViewTopics.setDisable(true);
                     addTopicBtn.setDisable(true);
                     difficulty.setDisable(true);
-                    listViewPossibilityAnswer.setDisable(true);
-                    AnswerField.setDisable(true);
-                    addAnswerBtn.setDisable(true);
+                    listViewChoosingItems.setDisable(true);
+                    choosingField.setDisable(true);
+                    addChoosingBtn.setDisable(true);
                     QuestionTyoe = "open";
                 } else {
                     TopicField.setDisable(false);
@@ -384,9 +398,9 @@ public class QuizUI {
                     listViewTopics.setDisable(false);
                     addTopicBtn.setDisable(false);
                     difficulty.setDisable(false);
-                    listViewPossibilityAnswer.setDisable(false);
-                    AnswerField.setDisable(false);
-                    addAnswerBtn.setDisable(false);
+                    listViewChoosingItems.setDisable(false);
+                    choosingField.setDisable(false);
+                    addChoosingBtn.setDisable(false);
                     QuestionTyoe = "mcq";
                 }
 
@@ -410,7 +424,7 @@ public class QuizUI {
             export.exportMcq();
         });
 
-        submitButton.setOnAction((ActionEvent event) -> {
+        carteQuestionBtn.setOnAction((ActionEvent event) -> {
             if ("mcq".equals(QuestionTyoe) || QuestionTyoe == null) {
 
                 if (QuestionField.getText().isEmpty()) {
@@ -426,7 +440,7 @@ public class QuizUI {
                     return;
                 }
 
-                if (listViewPossibilityAnswer.getItems().isEmpty()) {
+                if (listViewChoosingItems.getItems().isEmpty()) {
                     showAlert(Alert.AlertType.ERROR, gridPane.getScene().getWindow(), "Form Error!", "Please enter some choices");
                     return;
                 }
@@ -440,7 +454,7 @@ public class QuizUI {
                 mcq.CreateNewMCQ(QuestionField.getText(),
                         listViewTopics.getItems().toArray(),
                         difficulty.getSelectionModel().getSelectedItem().toString(),
-                        listViewPossibilityAnswer.getItems().toArray(),
+                        listViewChoosingItems.getItems().toArray(),
                         ListViewCorrectAnswer.getItems().toArray()
                 );
 
@@ -452,7 +466,7 @@ public class QuizUI {
                     return;
                 }
 
-                if (listViewPossibilityAnswer.getItems().isEmpty()) {
+                if (listViewChoosingItems.getItems().isEmpty()) {
                     showAlert(Alert.AlertType.ERROR, gridPane.getScene().getWindow(), "Form Error!", "Please enter some answers");
                     return;
                 }
@@ -460,10 +474,11 @@ public class QuizUI {
             }
 
             QuestionField.clear();
-            AnswerField.clear();
+            choosingField.clear();
             ListViewCorrectAnswer.getItems().clear();
             listViewTopics.getItems().clear();
-            listViewPossibilityAnswer.getItems().clear();
+            listViewChoosingItems.getItems().clear();
+            answerForTheQuestion.getItems().clear();
             System.out.print(event);
         });
 
@@ -479,6 +494,7 @@ public class QuizUI {
             Scene scene = new Scene(gridPane1, 800, 600);
             // Set the scene in primary stage
             psrimaryStage.setScene(scene);
+            psrimaryStage.setMaximized(true);
             psrimaryStage.show();
 
             System.out.print(event);
@@ -492,12 +508,14 @@ public class QuizUI {
         Label stID = new Label("Student ID: ");
         gridPaneMCQquiz.add(stID, 0, 0);
         TextField TextFieldStudentID = new TextField();
+        TextFieldStudentID.setMaxWidth(400);
         TextFieldStudentID.setPrefHeight(40);
         gridPaneMCQquiz.add(TextFieldStudentID, 1, 0);
 
         Label stName = new Label("Student Name: ");
         gridPaneMCQquiz.add(stName, 0, 2);
         TextField TextFieldName = new TextField();
+        TextFieldName.setMaxWidth(400);
         TextFieldName.setPrefHeight(40);
         gridPaneMCQquiz.add(TextFieldName, 1, 2);
 
@@ -510,21 +528,17 @@ public class QuizUI {
         GridPane.setMargin(submitButton, new Insets(20, 0, 20, 0));
 
         // Add possibilityanswers 
-        Label correctAnswerLabel = new Label("Answers:");
-        gridPaneMCQquiz.add(correctAnswerLabel, 0, 4);
+        Label correctAnswerLabel = new Label("Choos a number then add:");
+        gridPaneMCQquiz.add(correctAnswerLabel, 1, 4);
         correctAnswerLabel.setVisible(false);
 
-        ComboBox difficulty = new ComboBox();
-        difficulty.getItems().add("1");
-        difficulty.getItems().add("2");
-        difficulty.getItems().add("3");
-        difficulty.getItems().add("4");
-        difficulty.getItems().add("5");
-        difficulty.setVisible(false);
-        gridPaneMCQquiz.add(difficulty, 1, 4);
+        ComboBox studentAnswer = new ComboBox();
+        studentAnswer.setVisible(false);
+        studentAnswer.setMaxWidth(200);
+        gridPaneMCQquiz.add(studentAnswer, 2, 4);
 
         Button CaddAnswerBtn = new Button("+");
-        gridPaneMCQquiz.add(CaddAnswerBtn, 1, 4);
+        gridPaneMCQquiz.add(CaddAnswerBtn, 3, 4);
         CaddAnswerBtn.setVisible(false);
 
         ListView ListViewAnswer = new ListView();
@@ -532,12 +546,24 @@ public class QuizUI {
         gridPaneMCQquiz.add(ListViewAnswer, 1, 5);
         ListViewAnswer.setVisible(false);
 
+        TextFieldStudentID.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                TextFieldStudentID.setText(newValue.replaceAll("[^\\d]", ""));
+            }
+        });
+
+        TextFieldName.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\sa-zA-Z*")) {
+                TextFieldName.setText(newValue.replaceAll("[^\\sa-zA-Z]", ""));
+            }
+        });
+
         CaddAnswerBtn.setOnAction((ActionEvent event) -> {
-            if (difficulty.getSelectionModel().isEmpty()) {
-                showAlert(Alert.AlertType.ERROR, gridPaneMCQquiz.getScene().getWindow(), "Form Error!", "Please enter  answer number");
+            if (studentAnswer.getSelectionModel().isEmpty()) {
+                showAlert(Alert.AlertType.ERROR, gridPaneMCQquiz.getScene().getWindow(), "Form Error!", "Please selct  answer");
                 return;
             }
-            ListViewAnswer.getItems().add(difficulty.getSelectionModel().getSelectedItem().toString());
+            ListViewAnswer.getItems().add(studentAnswer.getSelectionModel().getSelectedItem().toString());
 
         });
 
@@ -549,6 +575,11 @@ public class QuizUI {
                     return;
                 }
 
+                if (ListViewAnswer.getItems().isEmpty() && "Next".equals(submitButton.getText())) {
+                    showAlert(Alert.AlertType.ERROR, gridPaneMCQquiz.getScene().getWindow(), "Form Error!", "Please select a  answer");
+                    return;
+                }
+
                 if (!TextFieldName.getText().isEmpty() && !TextFieldStudentID.getText().isEmpty()) {
 
                     stID.setVisible(false);
@@ -557,7 +588,7 @@ public class QuizUI {
                     TextFieldName.setVisible(false);
 
                     correctAnswerLabel.setVisible(true);
-                    difficulty.setVisible(true);
+                    studentAnswer.setVisible(true);
                     ListViewAnswer.setVisible(true);
                     CaddAnswerBtn.setVisible(true);
 
@@ -608,12 +639,15 @@ public class QuizUI {
                                         for (String name : nameArray) {
 
                                             String[] PossanAray = name.split(",");
+                                            studentAnswer.getItems().clear();
                                             for (String posanswer : PossanAray) {
 
                                                 sizOfArr++;
-                                                String details = posanswer.replace("\"", "");
-                                                String NameMcq = sizOfArr + " ) " + details;
+                                                String choos = posanswer.replace("\"", "");
+                                                String NameMcq = sizOfArr + " ) " + choos;
                                                 QustionAndAnswergrid.add(new Label(NameMcq), 1, sizOfArr);
+
+                                                studentAnswer.getItems().add(choos);
 
                                             }
                                         }
@@ -642,7 +676,7 @@ public class QuizUI {
                         } else {
 
                             correctAnswerLabel.setVisible(false);
-                            difficulty.setVisible(false);
+                            studentAnswer.setVisible(false);
                             ListViewAnswer.setVisible(false);
                             CaddAnswerBtn.setVisible(false);
 
