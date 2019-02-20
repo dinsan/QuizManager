@@ -16,7 +16,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.scene.control.Label;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -79,7 +78,7 @@ public class curd implements curdOperation {
                 boolean containsValue = jsonObject.containsValue((String) updatejsonObj.get("ID"));
 
                 if (containsValue) {
-                    
+
                     JSONObject xjson = (JSONObject) parser.parse(stringToParse);
                     xjson.put("difficulty", (String) updatejsonObj.get("difficulty"));
                     xjson.put("question", (String) updatejsonObj.get("question"));
@@ -191,6 +190,49 @@ public class curd implements curdOperation {
         return null;
     }
 
+    public JSONArray readByQuestionID(String SearchingQuestionID) {
+
+        String stringToParse = null;
+        ArrayList< String> list = new ArrayList<>();
+        try {
+
+            JSONParser parser = new JSONParser();
+            Object object = parser.parse(new FileReader(_utility.GetPathNmae("mcqQuestion")));
+
+            JSONArray jsonArray = (JSONArray) object;
+            int len = jsonArray.size();
+            if (!jsonArray.isEmpty()) {
+                for (int i = 0; i < len; i++) {
+                    list.add(jsonArray.get(i).toString());
+                }
+            }
+
+            for (int i = 0; i < list.size(); i++) {
+
+                stringToParse = list.get(i);
+                JSONObject jsonObject = (JSONObject) parser.parse(stringToParse);
+
+                JSONArray answerArray = (JSONArray) jsonObject.get("answer");
+                String QustionID = (String) jsonObject.get("ID");
+
+                if (SearchingQuestionID.equals(QustionID)) {
+                    return answerArray;
+                }
+
+            }
+
+        } catch (IOException | ParseException e) {
+            System.out.print(e.getMessage());
+        }
+
+        return null;
+    }
+
+    public JSONArray readAnswerByStudentID(String SearchingQuestionID) {
+
+        return null;
+    }
+
     @Override
     public ArrayList<String> delete(String ID, String FileName) {
 
@@ -267,17 +309,19 @@ public class curd implements curdOperation {
         }
     }
 
-    public void SaveAnswer(ArrayList answer) {
+    public void SaveAnswer(ArrayList answer, String StudentID) {
         try {
 
             Gson gsonBuilder = new GsonBuilder().create();
             String jsonFromPojo = gsonBuilder.toJson(answer);
 
-            if (!_utility.checkFileIsExting(_utility.GetPathNmae("quizAnswer"))) {
-                SaveJsonToFile(_utility.GetPathNmae("quizAnswer"), "[" + jsonFromPojo + "]");
+            StudentID = StudentID + "answer";
+            if (!_utility.checkFileIsExting(_utility.GetPathNmae(StudentID))) {
+
+                SaveJsonToFile(_utility.GetPathNmae(StudentID), "[" + jsonFromPojo + "]");
 
             } else {
-                AddextingJsonData(_utility.GetPathNmae("quizAnswer"), answer);
+                AddextingJsonData(_utility.GetPathNmae(StudentID), answer);
             }
 
             System.out.print("successfully created");

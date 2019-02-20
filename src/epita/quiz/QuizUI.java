@@ -220,15 +220,35 @@ public class QuizUI {
         deleteButton.setPrefWidth(100);
         gridPane.add(deleteButton, 3, 8);
 
+        Label sLabelID = new Label("Student ID");
+        gridPane.add(sLabelID, 2, 9);
+        
+        TextField studentID = new TextField();
+        gridPane.add(studentID, 2, 10);
+
         Button evaluationButton = new Button("EVlAUTION");
         evaluationButton.setPrefHeight(40);
         evaluationButton.setDefaultButton(true);
         evaluationButton.setPrefWidth(100);
-        gridPane.add(evaluationButton, 2, 9);
+        gridPane.add(evaluationButton, 3, 10);
+
+        studentID.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                studentID.setText(newValue.replaceAll("[^\\d]", ""));
+            }
+        });
 
         evaluationButton.setOnAction((ActionEvent event) -> {
 
-            showAlert(Alert.AlertType.INFORMATION, gridPane.getScene().getWindow(), "Test Result", "Out of 100/80");
+            if (studentID.getText().isEmpty()) {
+                showAlert(Alert.AlertType.ERROR, gridPane.getScene().getWindow(), "Form Error!", "Enter a student ID");
+
+            } else {
+                MCQChoice checkresult = new MCQChoice();
+                String resutlt = checkresult.checkTheResult(studentID.getText());
+
+                showAlert(Alert.AlertType.INFORMATION, gridPane.getScene().getWindow(), "Test Result", resutlt);
+            }
 
         });
 

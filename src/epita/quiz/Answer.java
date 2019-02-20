@@ -42,7 +42,7 @@ public class Answer {
 
         if (!"".equals(QuestionID)) {
             curd Create = new curd();
-            Create.SaveAnswer(arrayList);
+            Create.SaveAnswer(arrayList, StidentID);
         }
     }
 
